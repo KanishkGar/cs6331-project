@@ -20,6 +20,7 @@ def wait_for_port(port: int):
 
 @stub.function(
     image=Image.debian_slim() # python_version="3.10"
+    # template code
     .apt_install(
         "wget",
         "git",
@@ -29,6 +30,7 @@ def wait_for_port(port: int):
     )
     .env({"LD_PRELOAD": "/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4"})
     .run_commands(
+        # clone the webui, setup the python environment, install requirements
         "git clone --depth 1 --branch v1.6.0 https://github.com/AUTOMATIC1111/stable-diffusion-webui /webui",
         "python -m venv /webui/venv",
         "cd /webui && . venv/bin/activate && "
@@ -63,6 +65,7 @@ def wait_for_port(port: int):
     memory=1024,
     timeout=3600,
 )
+# template code
 def start_web_ui():
     START_COMMAND = r"""
 cd /webui && \
@@ -73,12 +76,13 @@ accelerate launch \
     --mixed_precision=fp16 \
     --dynamo_backend=inductor \
     --num_cpu_threads_per_process=6 \
-    /webui/launch.py \
+    /webui/launch.py \ # main function to launch the webui
         --skip-prepare-environment \
         --listen \
         --port 8000 \
         --enable-insecure-extension-access
 """
+    # template code to run webui on a website
     with forward(8000) as tunnel:
         p = subprocess.Popen(START_COMMAND, shell=True)
         wait_for_port(8000)
@@ -86,6 +90,7 @@ accelerate launch \
         stub.urls.put(tunnel.url)
         p.wait(3600)
 
+# template code to run webui on a website
 @stub.local_entrypoint()
 def main(no_browser: bool = False):
     start_web_ui.spawn()
