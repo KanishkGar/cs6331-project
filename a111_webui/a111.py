@@ -76,7 +76,7 @@ accelerate launch \
     --mixed_precision=fp16 \
     --dynamo_backend=inductor \
     --num_cpu_threads_per_process=6 \
-    /webui/launch.py \ # main function to launch the webui
+    /webui/launch.py \
         --skip-prepare-environment \
         --listen \
         --port 8000 \
